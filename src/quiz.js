@@ -6,12 +6,15 @@ class Quiz {
         this.correctAnswers = 0;
         this.currentQuestionIndex = 0;
     }
+
     getQuestion() {
         return this.questions[this.currentQuestionIndex];
     }
+
     moveToNextQuestion() {
         this.currentQuestionIndex++;
     }
+
     shuffleQuestions() {
         let arr = this.questions.slice()
         let nums = []
@@ -34,19 +37,44 @@ class Quiz {
         return this.questions
 
 
- }
+    }
+
     checkAnswer(answer) {
         if (answer === this.getQuestion().answer) {
             this.correctAnswers++;
         }
 
     }
-    hasEnded(){
-        if(this.currentQuestionIndex<this.questions.length){
+
+    hasEnded() {
+        if (this.currentQuestionIndex < this.questions.length) {
             return false
-        }else if(this.currentQuestionIndex===this.questions.length){
+        } else if (this.currentQuestionIndex === this.questions.length) {
             return true
         }
     }
 
+    filterQuestionsByDifficulty(difficulty){
+        if(typeof difficulty !== 'number'){
+            return
+        }
+
+        this.questions = this.questions.filter(function(element) {
+            if(element.difficulty === difficulty){
+                return true
+            } else 
+                return false
+        })
+    }
+
+    averageDifficulty(){
+        let sum = this.questions.reduce(function(accumulate, element){
+            return accumulate + element.difficulty
+        }, 0)
+        console.log(sum)
+
+        let media = sum / this.questions.length
+
+        return media
+    }
 }
