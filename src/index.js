@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     new Question("What is the mass–energy equivalence equation?", ["E = mc^2", "E = m*c^2", "E = m*c^3", "E = m*c"], "E = mc^2", 3),
     // Add more questions here
   ];
-  const quizDuration = 120; // 120 seconds (2 minutes)
+  const quizDuration = 5; // 120 seconds (2 minutes)
 
 
   /************  QUIZ INSTANCE  ************/
@@ -46,21 +46,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /************  SHOW INITIAL CONTENT  ************/
 
-  // Convert the time remaining in seconds to minutes and seconds, and pad the numbers with zeros if needed
-  const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
-  const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
-
-  // Display the time remaining in the time remaining container
-  const timeRemainingContainer = document.getElementById("timeRemaining");
-  timeRemainingContainer.innerText = `${minutes}:${seconds}`;
-
-  // Show first question
-  showQuestion();
-
-
   /************  TIMER  ************/
 
   let timer;
+
+  function setTimer () {
+
+    clearInterval(timer)
+
+    const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
+    const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
+
+    // Display the time remaining in the time remaining container
+    const timeRemainingContainer = document.getElementById("timeRemaining");
+    timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+
+    timer = setInterval(() => {
+
+      quiz.timeRemaining--
+
+      // Convert the time remaining in seconds to minutes and seconds, and pad the numbers with zeros if needed
+      const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
+      const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
+
+      // Display the time remaining in the time remaining container
+      const timeRemainingContainer = document.getElementById("timeRemaining");
+      timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+      
+      if(quiz.timeRemaining === 0){
+        clearInterval(timer)
+        showResults();
+      }
+
+    }, 1000)
+  }
+
+  // Show first question
+  showQuestion();
+  setTimer()
+
 
 
   /************  EVENT LISTENERS  ************/
@@ -180,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
     quiz.checkAnswer(selectedAnswer)
 
     quiz.moveToNextQuestion()
-    
+
     showQuestion()
   }  
 
@@ -207,15 +231,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     quiz.correctAnswers = 0
 
-    // 1. Hide the quiz view (div#quizView)
+    quiz.timeRemaining = quizDuration
+
+    // 1. Show the quiz view (div#quizView)
     quizView.style.display = "flex";
 
-    // 2. Show the end view (div#endView)
+    // 2. Hide the end view (div#endView)
     endView.style.display = "none";
 
     quiz.shuffleQuestions()
 
     showQuestion()
+
+    setTimer()
   }
   
 });
